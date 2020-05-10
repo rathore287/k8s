@@ -11,3 +11,15 @@ before_install:
   - gcloud config set project electric-eagle
   - gcloud config set compute/zone europe-west2-a
   - gcloud container clusters get-credentials cluster-1
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker build -t rathore287/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true rathore287/react-test npm test 
+
+deploy:
+  provider: script
+  script: bash ./deploy.sh
+
+  on:
+    branch: master
